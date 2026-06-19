@@ -1423,6 +1423,18 @@ class Tab {
                         gobbled=true;
                     } 
                     break;
+                case "R":
+                    if (!mod_key){
+                        this.template_clicked("randomize_params");
+                        gobbled=true;
+                    }
+                    break;
+                case "M":
+                    if (!mod_key){
+                        this.template_clicked("mutate_params");
+                        gobbled=true;
+                    }
+                    break;
                 case "L":
                     if (!mod_key){
                         this.toggle_all_locks();
