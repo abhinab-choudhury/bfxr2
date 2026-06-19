@@ -44,7 +44,7 @@ class Bfxr extends SynthBase {
                 ],
                 [
                     "Square",
-                    "quare waves can be quite powerful.  They have two extra properties, Square Duty and Duty Sweep, that can further control the timbre of the wave.",
+                    "Square waves can be quite powerful.  They have two extra properties, Square Duty and Duty Sweep, that can further control the timbre of the wave.",
                     0
                 ],
                 [
@@ -459,7 +459,7 @@ class Bfxr extends SynthBase {
         this.reset_params(true);
         this.set_param("waveType", this.select_random_wave_type("White","Bitnoise","Saw","Square","Voice"), true);
         if (this.get_param("waveType") == 0)
-            this.set_param("squareDuty", Math.random() * 0.6);
+            this.set_param("squareDuty", Math.random() * 0.6, true);
 
         this.set_param("frequency_start", 0.2 + Math.random() * 0.6, true);
         this.set_param("frequency_slide", -0.3 - Math.random() * 0.4, true);
