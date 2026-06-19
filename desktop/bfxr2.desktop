@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Bfxr2
+Comment=Sound effects generator for games
+Exec=bfxr2
+Icon=bfxr2
+Terminal=false
+Categories=AudioVideo;Audio;Game;

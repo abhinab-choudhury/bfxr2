@@ -26,44 +26,50 @@ webfiles:
 
 build: webfiles
 	@echo "Building Go binary..."
-	CGO_ENABLED=1 go build -o $(BINARY) .
+	CGO_ENABLED=0 go build -o $(BINARY) .
 	@echo "Binary built: $(BINARY)"
 
 appdir: build
 	@echo "Creating AppDir..."
 	mkdir -p $(APPDIR)/usr/bin
 	cp $(BINARY) $(APPDIR)/usr/bin/
-	cp ../icons/bfxr2.png $(APPDIR)/ 2>/dev/null || \
-		convert -size 256x256 xc:transparent -font Helvetica -pointsize 128 \
-			-fill '#4a90d9' -gravity center -annotate +0+0 'B' $(APPDIR)/bfxr2.png 2>/dev/null || \
-		touch $(APPDIR)/bfxr2.png
-	cat > $(APPDIR)/$(APPNAME).desktop <<-EOF
-		[Desktop Entry]
-		Type=Application
-		Name=Bfxr2
-		Comment=Sound effects generator for games
-		Exec=usr/bin/$(BINARY)
-		Icon=$(APPNAME)
-		Terminal=false
-		Categories=AudioVideo;Audio;Game;
-	EOF
-	cat > $(APPDIR)/AppRun <<-EOF
-		#!/bin/bash
-		exec "$$APPDIR/usr/bin/$(BINARY)"
-	EOF
+	cp bfxr2.desktop $(APPDIR)/
+	cp AppRun $(APPDIR)/
 	chmod +x $(APPDIR)/AppRun
+	cp bfxr2.svg $(APPDIR)/bfxr2.png 2>/dev/null; \
+	cp ../icons/bfxr2.png $(APPDIR)/ 2>/dev/null; \
+	cp ../../bfxr2.png $(APPDIR)/ 2>/dev/null; \
+	cp bfxr2.png $(APPDIR)/ 2>/dev/null; \
+	[ -f "$(APPDIR)/bfxr2.png" ] || touch $(APPDIR)/bfxr2.png
 	@echo "AppDir created."
+
+APPIMAGETOOL := $(shell command -v appimagetool 2>/dev/null || echo /tmp/appimagetool)
 
 appimage: appdir
 	@echo "Building AppImage..."
-	which appimagetool && appimagetool $(APPDIR) $(APPIMAGE) || \
-		echo "appimagetool not found. Install it from https://github.com/AppImage/appimagetool/releases"
-	@echo "AppImage built: $(APPIMAGE)"
+	if [ -x "$(APPIMAGETOOL)" ]; then \
+		"$(APPIMAGETOOL)" $(APPDIR) $(APPIMAGE) && echo "AppImage built: $(APPIMAGE)"; \
+	else \
+		echo "appimagetool not found. Install it from https://github.com/AppImage/appimagetool/releases"; \
+	fi
 
 clean:
 	rm -rf $(BINARY) web $(APPDIR) $(APPIMAGE)
 
+webview-setup:
+	@echo "Setting up vendored webview_go (webkit2gtk-4.1 patch)..."
+	rm -rf wv
+	go mod download github.com/webview/webview_go@v0.0.0-20240831120633-6173450d4dd6
+	cp -r "$(shell go env GOMODCACHE)/github.com/webview/webview_go@v0.0.0-20240831120633-6173450d4dd6" wv
+	chmod -R u+w wv
+	sed -i 's/webkit2gtk-4\.0/webkit2gtk-4.1/g' wv/webview.go
+	$(RM) wv/go.mod wv/go.sum
+	@echo "Webview vendored. Run: go build -tags webview -o $(BINARY) ."
+
+webview-build: webfiles webview-setup
+	CGO_ENABLED=1 go build -tags webview -o $(BINARY)-webview .
+
 run: build
 	./$(BINARY)
 
-.PHONY: all clean webfiles build appdir appimage run
+.PHONY: all clean webfiles build appdir appimage run webview-setup webview-build
