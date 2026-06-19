@@ -78,7 +78,7 @@ function register_drop_handlers(){
 
     // Add dragover event listener to prevent default browser behavior
     document.addEventListener('dragover', (e) => {
-        e.dataTransfer.dropEffect = "copy   ";
+        e.dataTransfer.dropEffect = "copy";
         e.preventDefault();
         showDropZone();
     });

@@ -109,10 +109,10 @@ class Tab {
             save_commands_div.classList.add("save_commands");
             left_panel.appendChild(save_commands_div);
 
-            var apply_sfx_button = this.add_button(this.name+"_apply_sfx", "Apply Sfx", this.apply_sfx.bind(this), "Apply the current sound to the current sound to the clipboard.");
+            var apply_sfx_button = this.add_button(this.name+"_apply_sfx", "Apply Sfx", this.apply_sfx.bind(this), "Save the current parameter changes as the saved state for this sound.");
             save_commands_div.appendChild(apply_sfx_button);
 
-            var revert_sfx_button = this.add_button(this.name+"_revert_sfx", "Revert Sfx", this.revert_sfx.bind(this), "Revert the current sound to the original sound to the clipboard.");
+            var revert_sfx_button = this.add_button(this.name+"_revert_sfx", "Revert Sfx", this.revert_sfx.bind(this), "Revert the current sound parameters to the last saved state.");
             save_commands_div.appendChild(revert_sfx_button);
 
             var duplicate_sfx_button = this.add_button(this.name+"_duplicate_sfx", "Duplicate Sfx", this.duplicate_sfx.bind(this), "Duplicate the currently-selected sound in the file list.");
@@ -1108,9 +1108,6 @@ class Tab {
         
         var progress_bar_val=0;
 
-        //each entry is [filename, blob]
-        var generated_files =[];
-
         //for all tabs
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
@@ -1145,7 +1142,6 @@ class Tab {
             }            
         }
 
-        console.log("Generated files: " + generated_files.length);
         export_progress_text.innerText = "generating zip file...";
         //create a zip file
         zip.generateAsync({type:"blob"}).then(function(content) {
