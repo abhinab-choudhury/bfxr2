@@ -274,7 +274,7 @@ class Bfxr_DSP {
         {
             if (finished) 
             {
-                return true;					
+                break;					
             }
             
             // Repeats every this.pitch_jump_repeat_length_samples times, partially resetting the sound parameters
