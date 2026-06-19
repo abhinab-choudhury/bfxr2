@@ -172,4 +172,48 @@ class Transfxr extends SynthBase {
         return this.params;
     }
 
+    /*********************/
+    /* SOUND SYNTHESIS   */
+    /*********************/
+
+    generate_sound() {
+        var sampleRate = 44100;
+        var duration = 0.3 + this.params.swiftness * 0.5;
+        var numSamples = Math.floor(sampleRate * duration);
+
+        var buffer = new Float32Array(numSamples);
+
+        var sweep_start = this.params.heel;
+        var sweep_end = this.params.ball;
+        var volume = this.params.masterVolume * this.params.masterVolume;
+
+        var attackSamples = Math.floor(sampleRate * 0.01);
+        var decaySamples = Math.floor(sampleRate * 0.1);
+
+        var tween = Transfxr.tweenfunctions[0][1];
+
+        for (var i = 0; i < numSamples; i++) {
+            var t = i / numSamples;
+            var tweened_t = tween(t);
+
+            var freq = 200 + (sweep_start + (sweep_end - sweep_start) * tweened_t) * 600;
+
+            var env;
+            if (i < attackSamples) {
+                env = i / attackSamples;
+            } else if (i > numSamples - decaySamples) {
+                env = (numSamples - i) / decaySamples;
+            } else {
+                env = 1.0;
+            }
+
+            var phase = (i * freq / sampleRate) % 1.0;
+            var sample = (phase < 0.5 ? 1 : -1) * env * volume;
+
+            buffer[i] = sample;
+        }
+
+        this.sound = RealizedSound.from_buffer(buffer);
+    }
+
 }

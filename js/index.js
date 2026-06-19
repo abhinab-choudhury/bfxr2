@@ -5,7 +5,7 @@ function register_tabs(){
     SaveLoad.collection_save_enabled=false;
     var bfxr_tab = new Tab(new Bfxr());   
     var footsteppr_tab = new Tab(new Footsteppr());
-    // var transfxr_tab = new Tab(new Transfxr());
+    var transfxr_tab = new Tab(new Transfxr());
     SaveLoad.collection_save_enabled=true;
     set_tab_from_loaded_data();
     SaveLoad.save_all_collections();
