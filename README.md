@@ -7,6 +7,13 @@ It's currently BETA, and new things should be coming to it, but the main additio
 
 ![image](https://github.com/user-attachments/assets/1f338401-d2e4-4100-ad4d-471ad6e56f6f)
 
+## New Features (June 2026)
+
+- **Undo/Redo** — Ctrl+Z, Ctrl+Shift+Z/Ctrl+Y, or buttons in the right panel. 50-level stack for parameter changes.
+- **Transfxr Tab** — A new basic sound generator tab for simple frequency-sweep effects (heel/toe/ball/roll).
+- **Drag-reorder files** — Drag and drop file list items to reorder them.
+- **R/M shortcuts** — Press R to randomize all parameters, M to mutate.
+
 ## Development
 cf. [DEVELOPMENT.md](https://github.com/increpare/bfxr2/blob/master/DEVELOPMENT.md).
 
