@@ -19,6 +19,10 @@ class Tab {
     sliders = {};
     lock_buttons = {};
 
+    /* undo/redo stacks */
+    undo_stack = [];
+    redo_stack = [];
+
     synth = null;
 
     constructor(synth_specification) {
@@ -239,6 +243,12 @@ class Tab {
 
             var copy_link_button = this.add_button("copy_link", "Copy Link", this.copy_link_button_clicked.bind(this), "Copy the current sound link");
             right_panel_button_list.appendChild(copy_link_button);
+
+            var undo_button = this.add_button("undo", "<u>U</u>ndo", this.undo.bind(this), "Undo last parameter change [CTRL+Z]");
+            right_panel_button_list.appendChild(undo_button);
+
+            var redo_button = this.add_button("redo", "<u>R</u>edo", this.redo.bind(this), "Redo last undone change [CTRL+Y]");
+            right_panel_button_list.appendChild(redo_button);
 
             var clear_all_button = this.add_button("clear_all", "Clear All", this.clear_all_button_clicked.bind(this), "Reset everything! Clean slate!");
             right_panel_button_list.appendChild(clear_all_button);
@@ -1042,6 +1052,7 @@ class Tab {
                 break;
             }
         }
+        this.push_undo_state();
         // special behaviour - if you hit 'mutate', then have the new file-name be
         // based on the existing one.
         var file_name = template_name==="mutate_params"?this.get_current_file_name():template_data[3];
@@ -1066,6 +1077,7 @@ class Tab {
 
     slider_changed(param_name, value) {
         console.log("Slider changed " + param_name + " to " + value);
+        this.push_undo_state();
         this.synth.set_param(param_name, value);
         this.files[this.selected_file_index][1] = JSON.stringify(this.synth.params);
         this.update_ablements();
@@ -1255,7 +1267,54 @@ class Tab {
         var about_dialog = document.getElementById("about-dialog");
         about_dialog.showModal();
     }
-    
+
+    /*********************/
+    /*   UNDO / REDO     */
+    /*********************/
+
+    push_undo_state() {
+        if (this.selected_file_index < 0 || !this.files[this.selected_file_index]) {
+            return;
+        }
+        this.undo_stack.push(JSON.stringify(this.synth.params));
+        if (this.undo_stack.length > 50) {
+            this.undo_stack.shift();
+        }
+        this.redo_stack = [];
+    }
+
+    undo() {
+        if (this.undo_stack.length === 0 || this.selected_file_index < 0) {
+            return;
+        }
+        this.redo_stack.push(JSON.stringify(this.synth.params));
+        var prev_state = JSON.parse(this.undo_stack.pop());
+        this.synth.apply_params(prev_state);
+        this.files[this.selected_file_index][1] = JSON.stringify(this.synth.params);
+        this.update_ui_params();
+        this.update_ablements();
+        if (this.play_on_change) {
+            this.play_sound();
+        }
+        SaveLoad.save_all_collections();
+    }
+
+    redo() {
+        if (this.redo_stack.length === 0 || this.selected_file_index < 0) {
+            return;
+        }
+        this.undo_stack.push(JSON.stringify(this.synth.params));
+        var next_state = JSON.parse(this.redo_stack.pop());
+        this.synth.apply_params(next_state);
+        this.files[this.selected_file_index][1] = JSON.stringify(this.synth.params);
+        this.update_ui_params();
+        this.update_ablements();
+        if (this.play_on_change) {
+            this.play_sound();
+        }
+        SaveLoad.save_all_collections();
+    }
+
     apply_sfx() {
         if (this.files[this.selected_file_index][2] === this.files[this.selected_file_index][1]){
             return;
@@ -1343,6 +1402,7 @@ class Tab {
                 child.disabled = false;
             }
         }
+        this.push_undo_state();
         this.synth.set_param(param_name, value);
         this.files[this.selected_file_index][1] = JSON.stringify(this.synth.params);
         this.update_ablements();
@@ -1431,6 +1491,22 @@ class Tab {
                         this.load_data_button_clicked();
                         gobbled=true;
                     } 
+                    break;
+                case "Z":
+                    if (mod_key){
+                        if (event.shiftKey) {
+                            this.redo();
+                        } else {
+                            this.undo();
+                        }
+                        gobbled=true;
+                    }
+                    break;
+                case "Y":
+                    if (mod_key){
+                        this.redo();
+                        gobbled=true;
+                    }
                     break;
                 case "L":
                     if (!mod_key){
