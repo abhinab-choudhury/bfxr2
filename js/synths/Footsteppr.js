@@ -147,7 +147,7 @@ class Footsteppr extends SynthBase {
     generate_terrain_texture(envelope_signal){
         var terrain_names = ["snow","grass","dirt","gravel","wood"];
         if (this.params.terrain >= terrain_names.length){
-            step_terrain = 0;
+            this.params.terrain = 0;
             console.log("step_terrain reset to 0");
         }
         var terrain_name = terrain_names[this.params.terrain];     
