@@ -14,17 +14,24 @@ It's currently BETA, and new things should be coming to it, but the main additio
 - **Drag-reorder files** — Drag and drop file list items to reorder them.
 - **R/M shortcuts** — Press R to randomize all parameters, M to mutate.
 
-## Desktop App (Linux)
+## Desktop App (Cross-Platform)
 
-A standalone desktop application is available in the `desktop/` directory. It embeds all web files and serves them locally, opening in your default browser. An AppImage build is also provided.
+A standalone desktop application is available in the `desktop/` directory. It embeds all web files using Go's `embed` package and runs as a local HTTP server — no external dependencies needed.
 
-```
+Supported on **Linux** (including AppImage), **Windows**, and **macOS**.
+
+```sh
 cd desktop
-make build       # Build the Go binary
-make appimage    # Build AppImage (requires appimagetool)
+
+# Build for your platform
+make build
+
+# Run it
+./bfxr2          # Linux/macOS
+bfxr2.exe        # Windows
 ```
 
-See [desktop/README.md](desktop/README.md) for details.
+See [desktop/README.md](desktop/README.md) for detailed cross-platform build instructions, including AppImage, macOS .app bundle, and Windows portable binary.
 
 ## Development
 cf. [DEVELOPMENT.md](https://github.com/increpare/bfxr2/blob/master/DEVELOPMENT.md).

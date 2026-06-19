@@ -1,76 +1,135 @@
 # Bfxr2 Desktop App
 
-A standalone desktop wrapper for [Bfxr2](https://www.bfxr.net/), the sound effects generator for games. Runs as a local HTTP server serving the embedded web app and opens it in your default browser.
+A cross-platform desktop wrapper for [Bfxr2](https://www.bfxr.net/), the sound effects generator for games.
+
+The app embeds all web files using Go's `embed` package, serves them via a local HTTP server, and opens your default browser. No web server or external dependencies needed.
+
+Supported on **Linux** (including AppImage), **Windows**, and **macOS**.
 
 ## Quick Start
 
+### Prerequisites
+- [Go](https://go.dev/) 1.21+
+
 ```sh
+cd desktop
+
+# Copy web files and build
 make build
+
+# Run it
 ./bfxr2
 ```
 
-This starts a local server on a random available port and opens your browser.
+The app starts on a random available port and opens your browser automatically.
 
-Use `--browser` to skip the webview (opens browser only):
+Use `--browser` to skip the native window (always opens browser):
 ```sh
 ./bfxr2 --browser
 ```
 
-## Building
+## Cross-Platform Builds
 
-### Prerequisites
+### Linux
 
-- [Go](https://go.dev/) 1.21+
+```sh
+cd desktop
 
-### Commands
+# Build binary
+make build
+
+# Build portable AppImage (requires appimagetool, see below)
+make appimage
+
+# Run the AppImage anywhere
+./bfxr2-x86_64.AppImage
+```
+
+**Installing appimagetool:**
+```sh
+wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage" -O /tmp/appimagetool
+chmod +x /tmp/appimagetool
+sudo mv /tmp/appimagetool /usr/local/bin/appimagetool
+```
+
+**Native window (optional):** Build with GTK/WebKit for a frameless window:
+```sh
+sudo apt install libgtk-3-dev libwebkit2gtk-4.1-dev
+make webview-build
+./bfxr2-webview
+```
+
+### macOS
+
+```sh
+cd desktop
+make build
+
+# Create a .app bundle
+mkdir -p bfxr2.app/Contents/MacOS
+cp bfxr2 bfxr2.app/Contents/MacOS/
+cp bfxr2.svg bfxr2.app/Contents/Resources/icon.svg
+
+cat > bfxr2.app/Contents/Info.plist <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleExecutable</key>
+  <string>bfxr2</string>
+  <key>CFBundleIdentifier</key>
+  <string>net.bfxr.desktop</string>
+  <key>CFBundleName</key>
+  <string>Bfxr2</string>
+  <key>CFBundleVersion</key>
+  <string>1.0</string>
+  <key>CFBundleShortVersionString</key>
+  <string>1.0</string>
+</dict>
+</plist>
+EOF
+
+chmod +x bfxr2.app/Contents/MacOS/bfxr2
+open bfxr2.app
+```
+
+### Windows
+
+```sh
+cd desktop
+go build -o bfxr2.exe .
+
+# Run it
+bfxr2.exe
+```
+
+The binary is portable — copy `bfxr2.exe` anywhere and run it. No installation needed.
+
+> **Tip:** On Windows, `rundll32` is used to open the browser. If your browser doesn't open automatically, navigate to the `http://localhost:PORT` URL shown in the terminal.
+
+## Makefile Commands
 
 | Command | Description |
 |---------|-------------|
 | `make webfiles` | Copy web files into the embedded `web/` directory |
 | `make build` | Build the Go binary |
-| `make appimage` | Build AppImage (requires `appimagetool`) |
-| `make run` | Build and run the desktop app |
+| `make appimage` | Build Linux AppImage (requires `appimagetool`) |
+| `make webview-build` | Build with native GTK/WebKit window (Linux only) |
+| `make run` | Build and run |
 | `make clean` | Remove build artifacts |
-
-### AppImage
-
-To build the AppImage:
-
-```sh
-make appimage
-```
-
-This produces `bfxr2-x86_64.AppImage` — a portable, self-contained executable.
-Download and run it anywhere without installing:
-
-```sh
-chmod +x bfxr2-x86_64.AppImage
-./bfxr2-x86_64.AppImage
-```
-
-### Webview Build (Optional)
-
-For a native desktop window instead of a browser tab, build with the `webview` tag:
-
-```sh
-# Install system dependencies (Ubuntu/Debian)
-sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev
-
-# Build with webview
-GOFLAGS=-tags=webview go build -o bfxr2 .
-```
-
-Note: The webview variant requires GTK3 and WebKit2GTK development libraries.
 
 ## Structure
 
 ```
 desktop/
-├── main.go          # Entry point (default: browser mode)
-├── webview.go       # Webview variant (build tag: webview)
-├── go.mod           # Go module
-├── wv/              # Vendored webview_go (for webview builds)
-├── Makefile         # Build automation
-├── AppDir/          # AppImage skeleton
-└── web/             # Embedded web files (generated)
+├── main.go           # Entry point — cross-platform browser mode
+├── webview.go        # Native window variant (build tag: webview, Linux-only)
+├── go.mod            # Go module (zero external deps for default build)
+├── Makefile          # Build automation
+├── README.md         # This file
+├── bfxr2.desktop     # Desktop entry for AppImage
+├── bfxr2.svg         # App icon
+├── AppRun            # AppImage entry point
+└── web/              # Embedded web files (generated by make webfiles)
 ```
