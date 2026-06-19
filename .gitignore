@@ -2,3 +2,5 @@
 node_modules
 *.gz
 /node_modules
+src-tauri/frontend/
+src-tauri/target/

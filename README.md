@@ -14,7 +14,63 @@ It's currently BETA, and new things should be coming to it, but the main additio
 - **Drag-reorder files** — Drag and drop file list items to reorder them.
 - **R/M shortcuts** — Press R to randomize all parameters, M to mutate.
 
-## Development
+## Desktop App (Tauri)
+
+A lightweight native desktop wrapper built with [Tauri](https://v2.tauri.app/) (Rust). Cross-platform: **Linux**, **Windows**, **macOS**.
+
+### Prerequisites
+
+- [Rust](https://rustup.rs/) 1.70+
+- System libraries (Linux only):
+
+```sh
+# Debian/Ubuntu
+sudo apt install libgtk-3-dev libwebkit2gtk-4.1-dev libsoup-3.0-dev \
+  libjavascriptcoregtk-4.1-dev libappindicator3-dev
+
+# Fedora
+sudo dnf install gtk3-devel webkit2gtk4.1-devel libsoup3-devel \
+  javascriptcoregtk4.1-devel libappindicator-gtk3-devel
+
+# Arch
+sudo pacman -S gtk3 webkit2gtk-4.1 libsoup3 javascriptcoregtk-4.1 libappindicator-gtk3
+```
+
+### Build & Run
+
+```sh
+# Development mode (hot-reloads on file changes)
+make dev-desktop
+# or: cd src-tauri && cargo tauri dev
+
+# Production build
+make build-desktop
+# or: cd src-tauri && cargo build --release
+# Binary: src-tauri/target/release/bfxr2
+
+# Build Linux AppImage
+make build-appimage
+# or: cd src-tauri && cargo tauri build --bundles appimage
+# AppImage: src-tauri/target/release/bundle/appimage/
+
+# Windows: build on Windows with `cargo tauri build`
+# macOS: build on macOS with `cargo tauri build`
+```
+
+### Structure
+
+```
+src-tauri/
+├── Cargo.toml          # Rust dependencies
+├── tauri.conf.json     # Tauri app config
+├── capabilities/       # Security permissions
+├── icons/              # App icons
+└── src/
+    ├── main.rs         # Entry point
+    └── lib.rs          # Tauri builder
+```
+
+## Development (Web)
 cf. [DEVELOPMENT.md](https://github.com/increpare/bfxr2/blob/master/DEVELOPMENT.md).
 
 ## Archaeology
