@@ -14,6 +14,21 @@ It's currently BETA, and new things should be coming to it, but the main additio
 - **Drag-reorder files** — Drag and drop file list items to reorder them.
 - **R/M shortcuts** — Press R to randomize all parameters, M to mutate.
 
+## Desktop App (Tauri)
+
+A native desktop wrapper built with [Tauri](https://v2.tauri.app/) (Rust). Cross-platform: **Linux**, **Windows**, **macOS**.
+
+```sh
+# Install system dependencies (Linux only)
+sudo apt install libgtk-3-dev libwebkit2gtk-4.1-dev libsoup-3.0-dev \
+  libjavascriptcoregtk-4.1-dev
+
+# Build & run (all platforms)
+cd src-tauri
+cargo build --release
+cargo run --release
+```
+
 ## Development
 cf. [DEVELOPMENT.md](https://github.com/increpare/bfxr2/blob/master/DEVELOPMENT.md).
 
