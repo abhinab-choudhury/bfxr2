@@ -29,9 +29,10 @@ class RealizedSound {
         } else {
             this.source.noteOn(t);
         }
+        var self = this;
         this.source.onended = function() {
-            if (this.source){
-                this.source.disconnect()
+            if (self.source){
+                self.source.disconnect()
             }
         }
     }
