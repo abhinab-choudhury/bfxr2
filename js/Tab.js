@@ -1428,7 +1428,7 @@ class Tab {
                     break;
                 case "O":
                     if (mod_key){
-                        this.load_data_button_clicked();
+                        this.open_data_button_clicked();
                         gobbled=true;
                     } 
                     break;
