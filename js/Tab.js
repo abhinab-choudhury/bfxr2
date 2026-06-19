@@ -623,19 +623,6 @@ class Tab {
             document.getElementById(dropdown_uid).classList.toggle("show");
         });
 
-        /*add dropdown for tween selection
-     looks like:
-  
-     <div class="dropdown">
-      <button onclick="myFunction()" class="dropbtn">Dropdown</button>
-          <div id="myDropdown" class="dropdown-content">
-              <a href="#">Link 1</a>
-              <a href="#">Link 2</a>
-              <a href="#">Link 3</a>
-          </div>
-      </div>
-      */
-
         var dropdown_content_div = document.createElement("div");
         dropdown_content_div.classList.add("dropdown-content");
         dropdown_content_div.id = dropdown_uid;
@@ -651,6 +638,13 @@ class Tab {
 
         var knob_r = this.new_knob(parameter_name + "_r", default_value_r, min, max, 0.01);
         parameter_cell.appendChild(knob_r);
+
+        knob_l.addEventListener("input", () => {
+            this.knob_transition_changed(parameter_name, knob_l.value, knob_r.value);
+        });
+        knob_r.addEventListener("input", () => {
+            this.knob_transition_changed(parameter_name, knob_l.value, knob_r.value);
+        });
     }
 
     new_knob(id, default_value, min, max, step) {
@@ -667,9 +661,6 @@ class Tab {
         knob.min = min;
         knob.max = max;
         knob.step = step;
-        knob.addEventListener("input", () => {
-            this.knob_transition_changed(parameter_name, knob_l.value, knob_r.value);
-        });
         return knob;
     }
 
@@ -1047,6 +1038,10 @@ class Tab {
         var file_name = template_name==="mutate_params"?this.get_current_file_name():template_data[3];
         this.synth[template_data[2]].bind(this.synth)();
         this.create_new_sound_from_params(file_name, this.synth.params);
+    }
+
+    knob_transition_changed(parameter_name, value_l, value_r) {
+        console.log("Knob transition changed: " + parameter_name + " = [" + value_l + ", " + value_r + "]");
     }
 
     create_new_sound_clicked(event) {
