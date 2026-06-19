@@ -2,4 +2,7 @@
 node_modules
 *.gz
 /node_modules
-/node_modules
+desktop/web/
+desktop/bfxr2
+desktop/*.AppImage
+desktop/AppDir/

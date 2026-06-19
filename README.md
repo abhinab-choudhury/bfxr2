@@ -14,6 +14,18 @@ It's currently BETA, and new things should be coming to it, but the main additio
 - **Drag-reorder files** — Drag and drop file list items to reorder them.
 - **R/M shortcuts** — Press R to randomize all parameters, M to mutate.
 
+## Desktop App (Linux)
+
+A standalone desktop application is available in the `desktop/` directory. It embeds all web files and serves them locally, opening in your default browser. An AppImage build is also provided.
+
+```
+cd desktop
+make build       # Build the Go binary
+make appimage    # Build AppImage (requires appimagetool)
+```
+
+See [desktop/README.md](desktop/README.md) for details.
+
 ## Development
 cf. [DEVELOPMENT.md](https://github.com/increpare/bfxr2/blob/master/DEVELOPMENT.md).
 
