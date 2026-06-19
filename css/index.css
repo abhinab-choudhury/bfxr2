@@ -288,6 +288,13 @@ body {
     background-color: var(--file-item-selected-background-color);
 }
 
+.file_item.dragging {
+    opacity: 0.5;
+}
+
+.file_item.drag-over {
+    border-top: 2px solid var(--panel-border-color);
+}
 
 .file_item_name {
     padding-left: 3px;

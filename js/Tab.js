@@ -925,6 +925,7 @@ class Tab {
         var display_name = file_name;
         var file_item = document.createElement("div");
         file_item.classList.add("file_item");
+        file_item.draggable = true;
         if (selected){
             file_item.classList.add("file_selected");
         }
@@ -955,6 +956,70 @@ class Tab {
             this.delete_file(file_name);
         });
         file_item.appendChild(delete_button);
+
+        file_item.addEventListener("dragstart", (event) => {
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData("text/plain", file_name);
+            file_item.classList.add("dragging");
+        });
+
+        file_item.addEventListener("dragend", (event) => {
+            file_item.classList.remove("dragging");
+            var file_list = document.getElementById(this.name + "_file_list");
+            var items = file_list.querySelectorAll(".file_item");
+            for (var i = 0; i < items.length; i++) {
+                items[i].classList.remove("drag-over");
+            }
+        });
+
+        file_item.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+            var file_list = document.getElementById(this.name + "_file_list");
+            var items = file_list.querySelectorAll(".file_item");
+            for (var i = 0; i < items.length; i++) {
+                items[i].classList.remove("drag-over");
+            }
+            file_item.classList.add("drag-over");
+        });
+
+        file_item.addEventListener("dragleave", (event) => {
+            file_item.classList.remove("drag-over");
+        });
+
+        file_item.addEventListener("drop", (event) => {
+            event.preventDefault();
+            file_item.classList.remove("drag-over");
+            var dragged_name = event.dataTransfer.getData("text/plain");
+            if (dragged_name === file_name) {
+                return;
+            }
+            var dragged_idx = -1;
+            var target_idx = -1;
+            for (var i = 0; i < this.files.length; i++) {
+                if (this.files[i][0] === dragged_name) {
+                    dragged_idx = i;
+                }
+                if (this.files[i][0] === file_name) {
+                    target_idx = i;
+                }
+            }
+            if (dragged_idx === -1 || target_idx === -1) {
+                return;
+            }
+            var item = this.files.splice(dragged_idx, 1)[0];
+            this.files.splice(target_idx, 0, item);
+            if (this.selected_file_index === dragged_idx) {
+                this.selected_file_index = target_idx;
+            } else if (dragged_idx < this.selected_file_index && target_idx >= this.selected_file_index) {
+                this.selected_file_index--;
+            } else if (dragged_idx > this.selected_file_index && target_idx <= this.selected_file_index) {
+                this.selected_file_index++;
+            }
+            this.update_ui_file_list();
+            SaveLoad.save_all_collections();
+        });
+
         return file_item;
     }
 
